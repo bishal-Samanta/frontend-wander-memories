@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 
 
+
 interface ImageUploadProps {
   isUploadFromGalary : boolean
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({isUploadFromGalary}) => {
+
+
+
   const [selectedImages, setSelectedImages] = useState([] as File[]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,10 +22,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({isUploadFromGalary}) => {
   return (
     <div>
       <label
-        htmlFor="fileInput"
         className="relative block px-4 py-2 bg-blue-500 text-white cursor-pointer rounded-md shadow-md hover:bg-blue-600"
       >
-        {isUploadFromGalary? (<><span>Upload</span>
+        {isUploadFromGalary === true ? (<><span>Upload</span>
         <input
           id="fileInput"
           type="file"
@@ -39,7 +42,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({isUploadFromGalary}) => {
           type="file"
           accept="image/*"
           className="hidden"
-          capture="user"
+          capture="environment"
           multiple // Enable multiple file selection
           onChange={handleImageChange}
         /></>)}
