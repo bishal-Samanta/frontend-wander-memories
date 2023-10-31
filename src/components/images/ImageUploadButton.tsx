@@ -1,6 +1,8 @@
-import React, {  useState } from "react";
+import React, {  useContext } from "react";
+import { AppContext } from "../../context/AppContextProvider";
+import { fileUploadOnchangeActionCreator } from "../../reducer/actionCreators";
 
-// import Webcam from "react-webcam";
+
 
 interface ImageUploadProps {
   isUploadFromGalary : boolean;
@@ -9,20 +11,15 @@ interface ImageUploadProps {
 
 const ImageUpload: React.FC<ImageUploadProps> = ({isUploadFromGalary  }) => {
 
-
-
-
-
-
-  const [selectedImages, setSelectedImages] = useState([] as File[]);
+  const { dispatch} = useContext(AppContext);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-
     const files = event.target.files;
     if (files) {
-      setSelectedImages([...selectedImages, ...Array.from(files)]);
+      dispatch(fileUploadOnchangeActionCreator([...Array.from(files)]));
     }
-  };
+  }
+
 
   return (
     <div>
@@ -54,16 +51,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({isUploadFromGalary  }) => {
         
       </label>
 
-      {selectedImages.length > 0 && (
-        <div>
-          <h3>Selected Images:</h3>
-          <ul>
-            {selectedImages.map((image, index) => (
-              <li key={index}>{image.name}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+     
     </div>
   );
 };
