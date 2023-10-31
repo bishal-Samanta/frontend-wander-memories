@@ -1,0 +1,122 @@
+import { getLocations } from "../../services/locationAutocomplete";
+import { useState } from "react";
+import getCurrentLocation from "../../utils/getCurrentLocationFromBrowser";
+
+export const ImageUoloadForm = () => {
+  const [inputData, setInputData] = useState("");
+  const [autoCompleteData, setAutoCompleteData] = useState([]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputData(e.target.value);
+    if (e.target.value.length >= 3) {
+      getLocations(e.target.value)
+        .then((res: { data: { features: [] } }) => {
+          console.log(res);
+          setAutoCompleteData(res.data.features);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    } else {
+      setAutoCompleteData([]);
+    }
+  };
+
+  const handleSelectedLocation = (locationName : string , latitude : unknown , longitude: unknown ) => {
+    setInputData(locationName);
+    setAutoCompleteData([]);
+    console.log(latitude , longitude)
+  };
+
+ 
+
+  const handleGetCurrentLocation = () => {
+    getCurrentLocation()
+      .then((res: any ) => {
+
+        if ( Array.isArray(res.data.results) && res.data.results.length > 0) {
+          const location =
+            res.data.results[0]?.address_line1 + ' : ' + res.data.results[0]?.county;
+          setInputData(location);
+          setAutoCompleteData([]);
+        } else {
+          console.log('No results found');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  
+
+  return (
+    <>
+      <div className="relative">
+        <div className="flex flex-row">
+          <div className="relative w-full" >
+            <input
+              type="text"
+              className="w-full px-5 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+              value={inputData}
+              onChange={handleChange}
+              placeholder="Enter your search..."
+            />
+
+            <ul className="absolute z-10 w-full mt-2 py-1 bg-white border border-gray-300 rounded-lg shadow-md">
+              {autoCompleteData?.map(
+                (el: {
+                  properties: {
+                    address_line1: string;
+                    lat: unknown;
+                    lon: unknown;
+                    place_id: string;
+                  };
+                }) => {
+                  return (
+                    <li
+                      className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                      key={el.properties.place_id}
+                      onClick={() =>
+                        handleSelectedLocation(
+                          el.properties.address_line1,
+                          el.properties.lat,
+                          el.properties.lon
+                        )
+                      }
+                    >
+                      {el.properties.address_line1}
+                    </li>
+                  );
+                }
+              )}
+            </ul>
+          </div>
+
+          <div className="flex items-center ml-2" >
+          <svg
+            className="h-8 w-8 text-gray-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            onClick={()=> handleGetCurrentLocation()}
+            >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            />
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            </svg>
+
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
