@@ -3,6 +3,7 @@ import getCurrentLocation from "../../utils/getCurrentLocationFromBrowser";
 import { useContext } from "react"
 import { AppContext } from "../../context/AppContextProvider";
 import { searchLocationActionCreator, updateImageUploadDataActionCreator } from "../../reducer/actionCreators";
+import { UploadToS3 } from "./UploadToS3";
 
 export const ImageUoloadForm = () => {
  
@@ -70,35 +71,36 @@ export const ImageUoloadForm = () => {
               onChange={handleChange}
               placeholder="Enter your search..."
             />
-
-            <ul className="absolute z-10 w-full mt-2 py-1 bg-white border border-gray-300 rounded-lg shadow-md">
-              {state.uploadImageForm.locationAutoCompleteData?.map(
-                (el: {
-                  properties: {
-                    address_line1: string;
-                    lat: number;
-                    lon: number;
-                    place_id: string;
-                  };
-                }) => {
-                  return (
-                    <li
-                      className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                      key={el.properties.place_id}
-                      onClick={() =>
-                        handleSelectedLocation(
-                          el.properties.address_line1,
-                          el.properties.lat,
-                          el.properties.lon
-                        )
-                      }
-                    >
-                      {el.properties.address_line1}
-                    </li>
-                  );
-                }
-              )}
-            </ul>
+            { state.uploadImageForm.locationAutoCompleteData && state.uploadImageForm.locationAutoCompleteData.length > 0 && 
+                <ul className="absolute z-10 w-full mt-2 py-1 bg-white border border-gray-300 rounded-lg shadow-md">
+                  {state.uploadImageForm.locationAutoCompleteData?.map(
+                    (el: {
+                      properties: {
+                        address_line1: string;
+                        lat: number;
+                        lon: number;
+                        place_id: string;
+                      };
+                    }) => {
+                      return (
+                        <li
+                          className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                          key={el.properties.place_id}
+                          onClick={() =>
+                            handleSelectedLocation(
+                              el.properties.address_line1,
+                              el.properties.lat,
+                              el.properties.lon
+                            )
+                          }
+                        >
+                          {el.properties.address_line1}
+                        </li>
+                      );
+                    }
+                  )}
+                </ul>
+              }
           </div>
 
           <div className="flex items-center ml-2" >
@@ -126,6 +128,8 @@ export const ImageUoloadForm = () => {
           </div>
         </div>
       </div>
+
+      <UploadToS3 />
     </>
   );
 };

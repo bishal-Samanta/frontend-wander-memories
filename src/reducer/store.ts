@@ -13,7 +13,7 @@ export interface AppState {
     count : number;
     dairies: DairyData[] | null; //All Dairies from API Request
     images: ImageData<GeolocationData>[] | null ; //All Images from API Request 
-    selectedImages: File[] | null; //All Images for uploading 
+    selectedImages: any | null; //All Images for uploading 
     uploadImageForm : UploadImagesForm;
 }
 

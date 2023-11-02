@@ -1,7 +1,6 @@
 import { createContext , useReducer , ReactNode } from "react";
 import store, { AppState } from "../reducer/store";
 import React from "react";
-// import { AppAction } from "../reducer/actions";
 import reducer from "../reducer/reducer";
 
 export interface AppContextType {
