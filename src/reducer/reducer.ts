@@ -1,4 +1,4 @@
-import { AppAction, FILE_UPLOAD_ONCHANGE, GET_ALL_DAIRIES, GET_ALL_IMAGES, REMOVE_IMAGE_FROM_UPLOAD } from "./actions";
+import { AppAction, FILE_UPLOAD_ONCHANGE, GET_ALL_DAIRIES, GET_ALL_IMAGES, LOCATION_SEARCH_THROUGH_API, REMOVE_IMAGE_FROM_UPLOAD, UPDATE_IMAGE_UPLOAD_DATA } from "./actions";
 import { AppState } from "./store";
 
 const reducer = (state: AppState, action: AppAction): AppState => {
@@ -25,6 +25,17 @@ const reducer = (state: AppState, action: AppAction): AppState => {
     case REMOVE_IMAGE_FROM_UPLOAD:
       return {...state , selectedImages : state.selectedImages && Array.isArray(action.payload) ? [...action.payload ] : []}
 
+    
+    case LOCATION_SEARCH_THROUGH_API : 
+      return {...state , uploadImageForm : {...state.uploadImageForm , locationAutoCompleteData : Array.isArray(action.payload) ? [...action.payload] : [...state.uploadImageForm.locationAutoCompleteData] }}
+    
+    
+    
+    case UPDATE_IMAGE_UPLOAD_DATA :
+     
+        return {...state , uploadImageForm : { ...state.uploadImageForm ,  [action.payload?.keyName] : [action.payload?.value] } }  
+
+    
     default:
       return state; // Always return the current state for unhandled actions
 

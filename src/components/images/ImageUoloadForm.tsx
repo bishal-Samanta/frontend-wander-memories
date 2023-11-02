@@ -1,30 +1,38 @@
 import { getLocations } from "../../services/locationAutocomplete";
-import { useState } from "react";
 import getCurrentLocation from "../../utils/getCurrentLocationFromBrowser";
+import { useContext } from "react"
+import { AppContext } from "../../context/AppContextProvider";
+import { searchLocationActionCreator, updateImageUploadDataActionCreator } from "../../reducer/actionCreators";
 
 export const ImageUoloadForm = () => {
-  const [inputData, setInputData] = useState("");
-  const [autoCompleteData, setAutoCompleteData] = useState([]);
+ 
+  const { state, dispatch} = useContext(AppContext);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputData(e.target.value);
+    console.log(e.target.value)
+
+    dispatch(updateImageUploadDataActionCreator("locationData" , e.target.value));
+
     if (e.target.value.length >= 3) {
       getLocations(e.target.value)
         .then((res: { data: { features: [] } }) => {
           console.log(res);
-          setAutoCompleteData(res.data.features);
+          dispatch(searchLocationActionCreator(res.data.features));
         })
         .catch((err) => {
           console.log("err", err);
         });
     } else {
-      setAutoCompleteData([]);
+      dispatch(searchLocationActionCreator([]));
     }
   };
 
-  const handleSelectedLocation = (locationName : string , latitude : unknown , longitude: unknown ) => {
-    setInputData(locationName);
-    setAutoCompleteData([]);
+  const handleSelectedLocation = (locationName : string , latitude : number , longitude: number ) => {
+    dispatch(updateImageUploadDataActionCreator("locationData" , locationName));
+    dispatch(updateImageUploadDataActionCreator("latitude" , latitude.toString() ));
+    dispatch(updateImageUploadDataActionCreator("longitude" , longitude.toString() ));
+
+    dispatch(searchLocationActionCreator([]));
     console.log(latitude , longitude)
   };
 
@@ -37,8 +45,9 @@ export const ImageUoloadForm = () => {
         if ( Array.isArray(res.data.results) && res.data.results.length > 0) {
           const location =
             res.data.results[0]?.address_line1 + ' : ' + res.data.results[0]?.county;
-          setInputData(location);
-          setAutoCompleteData([]);
+   
+          dispatch(updateImageUploadDataActionCreator("locationData" , location));
+          dispatch(searchLocationActionCreator([]));
         } else {
           console.log('No results found');
         }
@@ -57,18 +66,18 @@ export const ImageUoloadForm = () => {
             <input
               type="text"
               className="w-full px-5 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
-              value={inputData}
+              value={state.uploadImageForm.locationData}
               onChange={handleChange}
               placeholder="Enter your search..."
             />
 
             <ul className="absolute z-10 w-full mt-2 py-1 bg-white border border-gray-300 rounded-lg shadow-md">
-              {autoCompleteData?.map(
+              {state.uploadImageForm.locationAutoCompleteData?.map(
                 (el: {
                   properties: {
                     address_line1: string;
-                    lat: unknown;
-                    lon: unknown;
+                    lat: number;
+                    lon: number;
                     place_id: string;
                   };
                 }) => {
